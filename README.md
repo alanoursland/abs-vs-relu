@@ -85,13 +85,11 @@ Results are stored in the `results/` directory, with separate subdirectories for
 ### MNIST LeNet Experiment Results
 We conducted experiments on the MNIST dataset using the LeNet architecture to compare the performance of the ReLU and Abs activation functions. Below are the test set final results from 5 runs for each activation function:
 
-**ReLU**: Average Accuracy: **98.60%** Average Loss: **0.0007**
-**Abs**: Average Accuracy: **98.80%** Average Loss: **0.0006**
-**T-Test**: t-statistic: **-4.006** p-value: **0.0039**
+**ReLU**: Average Accuracy: **98.57%** Average Loss: **0.0007**
+**Abs**: Average Accuracy: **98.76%** Average Loss: **0.0006**
+**T-Test**: t-statistic: **4.1216** p-value: **0.0033**
 
-Since the p-value is less than 0.05, the difference in accuracies is statistically significant, indicating that the Abs activation function performs better than the ReLU activation function for the MNIST dataset using the LeNet architecture.
-
-The Abs activation function not only improves accuracy but also reduces the average loss compared to the ReLU activation function in our MNIST LeNet experiment. These results suggest that Abs is a viable alternative to ReLU.
+Since the p-value is less than 0.05, the difference in accuracies is statistically significant, indicating that the Abs activation function performs better than the ReLU activation function for the MNIST dataset using the LeNet architecture. These results suggest that Abs is a viable alternative to ReLU.
 
 
 
