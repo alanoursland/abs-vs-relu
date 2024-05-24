@@ -1,6 +1,6 @@
 {
     "dataset": "mnist",
-    "model": "lecun",
+    "model": "lenet",
     "activation": "relu",
     "batch_size": 64,
     "test_batch_size": 1000,
