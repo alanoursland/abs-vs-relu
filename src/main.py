@@ -37,13 +37,33 @@ def main():
     config_dict = load_config(args.config)
     config = Config(config_dict, cuda_device=device)
 
+    results_list = []
     for run in range(1, config.num_runs + 1):
         run_dir = os.path.join(config.output_dir, f"{run:04d}")
         os.makedirs(run_dir, exist_ok=True)
         config.run = run
         config.run_dir = run_dir
         print(f"Running experiment {run}/{config.num_runs}")
-        train_mnist_main(config)
+        results_list.append(train_mnist_main(config))
+
+    test_losses = []
+    test_accuracies = []
+    training_times = []
+    for results in results_list:
+        test_losses.append(results["test_losses"][-1])
+        test_accuracies.append(results["accuracies"][-1])
+        training_times.append(results["training_time"])
+
+    # Print summary of test dataset results
+    print(f"Test set results for {config.dataset} {config.model} {config.activation_function}:")
+    print("Final test losses:", [f"{loss:.4f}" for loss in test_losses])
+    print("Final accuracies:", [f"{acc:.2f}" for acc in test_accuracies])
+    print("Training times:", [f"{sec:.2f}" for sec in training_times])
+
+    print(f"Average loss: {sum(test_losses)/len(test_losses):.4f}")
+    print(f"Average accuracy: {sum(test_accuracies)/len(test_accuracies):.2f}%")
+
+    # Print final loss and accuracy for each run in list format
 
 
 if __name__ == "__main__":

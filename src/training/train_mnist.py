@@ -104,7 +104,13 @@ def main(config):
     results_path = os.path.join(config.run_dir, "results.pth")
     torch.save(results, results_path)
 
+    return results
+
     # Print summary of test dataset results
     print(f"Test set results for {config.activation_function}:")
     print(f"Average loss: {sum(test_losses)/len(test_losses):.4f}")
     print(f"Average accuracy: {sum(accuracies)/len(accuracies):.2f}%")
+
+    # Print final loss and accuracy for each run in list format
+    print("Final test losses:", [f"{loss:.4f}" for loss in test_losses])
+    print("Final accuracies:", [f"{acc:.2f}" for acc in accuracies])
