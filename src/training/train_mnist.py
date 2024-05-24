@@ -1,0 +1,97 @@
+# src/training/train_mnist.py
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+import os
+
+from models.lenet import LeNet
+from data.mnist_loader import load_mnist
+from utils.metrics import calculate_metrics
+from utils.visualization import plot_loss_curves
+
+
+def train(model, device, train_loader, optimizer, criterion, epoch, log_interval=100):
+    model.train()
+    train_loss = 0
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(device), target.to(device)
+        optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+        if batch_idx % log_interval == 0:
+            print(
+                f"Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} "
+                f"({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}"
+            )
+    train_loss /= len(train_loader.dataset)
+    return train_loss
+
+
+def test(model, device, test_loader, criterion):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += criterion(output, target).item()  # Sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+    accuracy = 100.0 * correct / len(test_loader.dataset)
+    print(
+        f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} "
+        f"({accuracy:.2f}%)\n"
+    )
+    return test_loss, accuracy
+
+
+def main(config):
+    torch.manual_seed(config.seed)
+    if config.use_cuda:
+        torch.cuda.manual_seed(config.seed)
+
+    train_loader, test_loader = load_mnist(batch_size=config.batch_size)
+
+    activation_function = config.get_activation_function(config.activation_function)
+    model = LeNet(activation_function=activation_function).to(config.device)
+
+    optimizer = optim.SGD(model.parameters(), lr=config.learning_rate, momentum=config.momentum)
+    criterion = nn.CrossEntropyLoss()
+
+    train_losses = []
+    test_losses = []
+    accuracies = []
+
+    for epoch in range(1, config.epochs + 1):
+        train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, config.log_interval)
+        test_loss, accuracy = test(model, config.device, test_loader, criterion)
+        train_losses.append(train_loss)
+        test_losses.append(test_loss)
+        accuracies.append(accuracy)
+
+    if config.save_model:
+        model_save_path = os.path.join(config.run_dir, f"mnist_lenet_{config.activation_function}.pth")
+        torch.save(model.state_dict(), model_save_path)
+
+    plot_loss_curves(train_losses, test_losses, save_path=os.path.join(config.run_dir, "loss_curves.png"))
+
+    results = {"train_losses": train_losses, "test_losses": test_losses, "accuracies": accuracies}
+
+    results_path = os.path.join(config.run_dir, "results.pth")
+    torch.save(results, results_path)
+
+
+if __name__ == "__main__":
+    import sys
+    from src.config import Config
+
+    main(Config)
