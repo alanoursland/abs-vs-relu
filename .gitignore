@@ -16,3 +16,6 @@ datasets/
 *.log
 temp/
 tmp/
+
+# Ignore vscode settings
+settings.json
