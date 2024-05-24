@@ -1,1 +1,2 @@
 python src/main.py --config configs/mnist_relu.json
+python src/main.py --config configs/mnist_abs.json
