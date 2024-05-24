@@ -1,0 +1,18 @@
+# .gitignore
+
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+
+# Ignore environment files
+.env
+*.env
+
+# Ignore dataset directories
+datasets/
+
+# Ignore any temporary files and directories
+*.tmp
+*.log
+temp/
+tmp/

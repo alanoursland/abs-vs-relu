@@ -16,13 +16,13 @@ class LeNet(nn.Module):
         self.fc3 = nn.Linear(in_features=84, out_features=10)
 
     def forward(self, x):
-        x = self.activation()(self.conv1(x))
+        x = self.activation(self.conv1(x))
         x = F.max_pool2d(x, kernel_size=2, stride=2)
-        x = self.activation()(self.conv2(x))
+        x = self.activation(self.conv2(x))
         x = F.max_pool2d(x, kernel_size=2, stride=2)
         x = x.view(-1, 16 * 5 * 5)
-        x = self.activation()(self.fc1(x))
-        x = self.activation()(self.fc2(x))
+        x = self.activation(self.fc1(x))
+        x = self.activation(self.fc2(x))
         x = self.fc3(x)
         return x
 

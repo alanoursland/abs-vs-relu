@@ -1,0 +1,16 @@
+{
+    "dataset": "mnist",
+    "model": "lecun",
+    "activation": "relu",
+    "batch_size": 64,
+    "test_batch_size": 1000,
+    "epochs": 10,
+    "learning_rate": 0.001,
+    "momentum": 0.5,
+    "no_cuda": false,
+    "seed": 1,
+    "log_interval": 100,
+    "save_model": true,
+    "output_dir": "experiments/MNIST_LeNet_ReLU",
+    "num_runs": 5
+}
