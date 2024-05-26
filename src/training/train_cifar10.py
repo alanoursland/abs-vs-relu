@@ -37,22 +37,21 @@ def train(model, device, train_loader, optimizer,  scheduler, criterion,epoch, l
     return train_loss
 
 
-def test(model, device, test_loader, criterion, epoch):
+def test(model, X_test, Y_test, criterion, epoch):
     model.eval()
     test_loss = 0
     correct = 0
+    sample_count = Y_test.size(0)
     with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += criterion(output, target).item()  # Sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
-            correct += pred.eq(target.view_as(pred)).sum().item()
+        output = model(X_test)
+        test_loss = criterion(output, Y_test).item() * sample_count
+        pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
+        correct += pred.eq(Y_test.view_as(pred)).sum().item()
 
-    test_loss /= len(test_loader.dataset)
-    accuracy = 100.0 * correct / len(test_loader.dataset)
+    test_loss /= sample_count
+    accuracy = 100.0 * correct / sample_count
     print(
-        f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} " f"({accuracy:.2f}%)"
+        f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{sample_count} " f"({accuracy:.2f}%)"
     )
     return test_loss, accuracy
 
@@ -62,20 +61,24 @@ def main(config):
     if config.device.type == "cuda":
         torch.cuda.manual_seed(config.seed)
 
-    train_loader, test_loader = load_cifar10(batch_size=config.batch_size, cuda_device=config.device)
+    train_loader, test_loader = load_cifar10(batch_size=config.batch_size)
 
     activation_function = config.get_activation_function(config.activation_function)
     model = ResNet18(num_classes=10, activation_function=activation_function).to(config.device)
+
+    # Get the entire test set in a single batch
+    X_test, Y_test = next(iter(test_loader))
+
+    # Move the data to GPU
+    X_test = X_test.to(config.device)
+    Y_test = Y_test.to(config.device)
 
     optimizer = optim.SGD(
         model.parameters(), lr=config.learning_rate, momentum=config.momentum, weight_decay=config.weight_decay
     )
 
-    # We start with a learning rate of 0.1, divide it by 10 at 32k and 48k iterations, and
-    # terminate training at 64k iterations, which is determined on a 45k/5k train/val split.
-
-    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20, 60], gamma=0.1)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30, 60], gamma=0.1)
+    # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5)
 
     criterion = nn.CrossEntropyLoss()
 
@@ -87,7 +90,7 @@ def main(config):
 
     for epoch in range(1, config.epochs + 1):
         train_loss = train(model, config.device, train_loader, optimizer, scheduler, criterion, epoch, config.log_interval)
-        test_loss, accuracy = test(model, config.device, test_loader, criterion, epoch)
+        test_loss, accuracy = test(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
         accuracies.append(accuracy)
