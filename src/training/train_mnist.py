@@ -105,3 +105,22 @@ def main(config):
     torch.save(results, results_path)
 
     return results
+
+# Test set results for cifar10 resnet18 abs:
+# Final test losses: ['0.0007', '0.0007', '0.0007', '0.0007', '0.0007']
+# Final accuracies: ['98.51', '98.70', '98.50', '98.60', '98.52']
+# Training times: ['20.49', '20.49', '20.43', '20.48', '20.49']
+# Average loss: 0.0007
+# Average accuracy: 98.57%
+
+# # Test set results for cifar10 resnet18 relu:
+# Final test losses: ['0.0006', '0.0005', '0.0006', '0.0006', '0.0006']
+# Final accuracies: ['98.76', '98.84', '98.75', '98.77', '98.67']
+# Training times: ['21.99', '21.31', '21.22', '21.24', '21.14']
+# Average loss: 0.0006
+# Average accuracy: 98.76%
+
+# t-statistic: 4.1216 
+# p-value: 0.0033
+
+# The difference in accuracies is statistically significant, indicating that our method performs better than their method.
