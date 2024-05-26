@@ -3,5 +3,6 @@
 # Initialize the utils package
 from .metrics import calculate_metrics
 from .visualization import plot_loss_curves, plot_activation_distribution
+from .ptest import calculate_ttest
 
-__all__ = ['calculate_metrics', 'plot_loss_curves', 'plot_activation_distribution']
+__all__ = ['calculate_metrics', 'plot_loss_curves', 'plot_activation_distribution', 'calculate_ttest']

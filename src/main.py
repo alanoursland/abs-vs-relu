@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from src.training.train_mnist import main as train_mnist_main
 from src.training.train_cifar10 import main as train_cifar10_main
+from src.training.train_cifar100 import main as train_cifar100_main
 from src.config import Config
 
 def load_config(json_file):
@@ -42,6 +43,8 @@ def main():
         train_function = train_mnist_main
     elif config.dataset.lower() == 'cifar10':
         train_function = train_cifar10_main
+    elif config.dataset.lower() == 'cifar100':
+        train_function = train_cifar100_main
     else:
         raise ValueError(f"Unsupported dataset: {config.dataset}")
 

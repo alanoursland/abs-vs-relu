@@ -10,9 +10,7 @@ import time
 
 from models.resnet18 import ResNet18
 from data.cifar10_loader import load_cifar10
-from utils.metrics import calculate_metrics
 from utils.visualization import plot_loss_curves
-from src.config import Config  # Import Config class
 
 
 def train(model, device, train_loader, optimizer,  scheduler, criterion,epoch, log_interval=100):
