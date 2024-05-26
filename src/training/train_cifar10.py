@@ -1,0 +1,121 @@
+# src/training/train_cifar10.py
+
+# from https://github.com/kuangliu/pytorch-cifar
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import os
+import time
+
+from models.resnet18 import ResNet18
+from data.cifar10_loader import load_cifar10
+from utils.metrics import calculate_metrics
+from utils.visualization import plot_loss_curves
+from src.config import Config  # Import Config class
+
+
+def train(model, device, train_loader, optimizer,  scheduler, criterion,epoch, log_interval=100):
+    model.train()
+    train_loss = 0
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(device), target.to(device)
+        optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+        if batch_idx % log_interval == 0:
+            print(
+                f"Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} "
+                f"({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}"
+            )
+    if scheduler != None:
+        scheduler.step()
+    train_loss /= len(train_loader.dataset)
+    return train_loss
+
+
+def test(model, device, test_loader, criterion, epoch):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += criterion(output, target).item()  # Sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+    accuracy = 100.0 * correct / len(test_loader.dataset)
+    print(
+        f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} " f"({accuracy:.2f}%)"
+    )
+    return test_loss, accuracy
+
+
+def main(config):
+    torch.manual_seed(config.seed)
+    if config.device.type == "cuda":
+        torch.cuda.manual_seed(config.seed)
+
+    train_loader, test_loader = load_cifar10(batch_size=config.batch_size, cuda_device=config.device)
+
+    activation_function = config.get_activation_function(config.activation_function)
+    model = ResNet18(num_classes=10, activation_function=activation_function).to(config.device)
+
+    optimizer = optim.SGD(
+        model.parameters(), lr=config.learning_rate, momentum=config.momentum, weight_decay=config.weight_decay
+    )
+
+    # We start with a learning rate of 0.1, divide it by 10 at 32k and 48k iterations, and
+    # terminate training at 64k iterations, which is determined on a 45k/5k train/val split.
+
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20, 60], gamma=0.1)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5)
+
+    criterion = nn.CrossEntropyLoss()
+
+    train_losses = []
+    test_losses = []
+    accuracies = []
+
+    start_time = time.time()  # Record the start time
+
+    for epoch in range(1, config.epochs + 1):
+        train_loss = train(model, config.device, train_loader, optimizer, scheduler, criterion, epoch, config.log_interval)
+        test_loss, accuracy = test(model, config.device, test_loader, criterion, epoch)
+        train_losses.append(train_loss)
+        test_losses.append(test_loss)
+        accuracies.append(accuracy)
+
+    end_time = time.time()  # Record the end time
+    training_time = end_time - start_time  # Calculate the total training time
+
+    if config.save_model:
+        model_save_path = os.path.join(config.run_dir, f"cifar10_resnet18_{config.activation_function}.pth")
+        torch.save(model.state_dict(), model_save_path)
+
+    plot_title = f"Error {config.dataset} {config.model} {config.activation} {config.run}"
+    plot_loss_curves(
+        train_losses,
+        test_losses,
+        title=plot_title,
+        save_path=os.path.join(config.run_dir, "loss_curves.png"),
+        show_plot=False,
+    )
+
+    results = {
+        "train_losses": train_losses,
+        "test_losses": test_losses,
+        "accuracies": accuracies,
+        "training_time": training_time,
+    }
+
+    results_path = os.path.join(config.run_dir, "results.pth")
+    torch.save(results, results_path)
+
+    return results

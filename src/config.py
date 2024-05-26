@@ -17,6 +17,7 @@ class Config:
         self.epochs = config_dict.get("epochs", 10)
         self.learning_rate = config_dict.get("learning_rate", 0.01)
         self.momentum = config_dict.get("momentum", 0.5)
+        self.weight_decay = config_dict.get("weight_decay", 5e-4)
         self.seed = config_dict.get("seed", 1)
         self.log_interval = config_dict.get("log_interval", 100)
         self.save_model = config_dict.get("save_model", True)

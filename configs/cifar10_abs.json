@@ -1,0 +1,17 @@
+{
+    "dataset": "cifar10",
+    "model": "resnet18",
+    "activation": "abs",
+    "batch_size": 128,
+    "test_batch_size": 1000,
+    "epochs": 30,
+    "learning_rate": 0.1,
+    "momentum": 0.9,
+    "weight_decay": 1e-4,
+    "no_cuda": false,
+    "seed": 1,
+    "log_interval": 1000,
+    "save_model": true,
+    "output_dir": "experiments/CIFAR10_ResNet18_Abs",
+    "num_runs": 1
+}
