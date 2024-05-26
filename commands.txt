@@ -1,2 +1,7 @@
 python src/main.py --config configs/mnist_relu.json
 python src/main.py --config configs/mnist_abs.json
+python src/utils/ptest.py configs/cifar10_abs.json configs/cifar10_relu.json
+
+python src/main.py --config configs/cifar10_relu.json
+python src/main.py --config configs/cifar10_abs.json
+python src/utils/ptest.py configs/cifar10_relu.json configs/cifar10_abs.json
