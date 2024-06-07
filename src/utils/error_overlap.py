@@ -7,17 +7,20 @@ from torchvision import datasets, transforms
 
 # Add the src directory to the Python path
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from src.models.lenet import LeNet
 from src.data.mnist_loader import load_mnist
 from src.config import Config
+
 
 def load_model(model_path, activation_function):
     model = LeNet(activation_function=activation_function)
     model.load_state_dict(torch.load(model_path))
     model.eval()
     return model
+
 
 def evaluate_model(model, test_loader, device):
     model.to(device)
@@ -29,9 +32,12 @@ def evaluate_model(model, test_loader, device):
             output = model(data)
             pred = output.argmax(dim=1, keepdim=True)
             incorrect_mask = pred.ne(target.view_as(pred)).squeeze()
-            incorrect_indices.extend((batch_idx * test_loader.batch_size + incorrect_mask.nonzero(as_tuple=False)).squeeze().tolist())
+            incorrect_indices.extend(
+                (batch_idx * test_loader.batch_size + incorrect_mask.nonzero(as_tuple=False)).squeeze().tolist()
+            )
 
     return incorrect_indices
+
 
 def error_overlap_analysis(config_a, config_b, device):
     _, test_loader = load_mnist(batch_size=config_a.test_batch_size, cuda_device=device, use_gpu=True)
@@ -40,11 +46,15 @@ def error_overlap_analysis(config_a, config_b, device):
     errors_b = []
 
     for run in range(1, config_a.num_runs + 1):
-        model_path_a = os.path.join(config_a.output_dir, f"{run:04d}", f"mnist_{config_a.model.lower()}_{config_a.activation.lower()}.pth")
+        model_path_a = os.path.join(
+            config_a.output_dir, f"{run:04d}", f"mnist_{config_a.model.lower()}_{config_a.activation.lower()}.pth"
+        )
         model_a = load_model(model_path_a, config_a.get_activation_function(config_a.activation_function))
         errors_a.append(evaluate_model(model_a, test_loader, device))
 
-        model_path_b = os.path.join(config_b.output_dir, f"{run:04d}", f"mnist_{config_b.model.lower()}_{config_b.activation.lower()}.pth")
+        model_path_b = os.path.join(
+            config_b.output_dir, f"{run:04d}", f"mnist_{config_b.model.lower()}_{config_b.activation.lower()}.pth"
+        )
         model_b = load_model(model_path_b, config_b.get_activation_function(config_b.activation_function))
         errors_b.append(evaluate_model(model_b, test_loader, device))
 
@@ -58,12 +68,19 @@ def error_overlap_analysis(config_a, config_b, device):
             union_errors = set(errors_r) | set(errors_a)
 
             metrics[f"Model_R_{i+1}_A_{j+1}"]["Common Error Rate"] = len(common_errors) / len(test_loader.dataset)
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model A)"] = len(unique_errors_r) / len(test_loader.dataset)
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model B)"] = len(unique_errors_a) / len(test_loader.dataset)
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Error Consistency"] = len(common_errors) / (len(errors_r) + len(errors_a) - len(common_errors))
+            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model A)"] = len(unique_errors_r) / len(
+                test_loader.dataset
+            )
+            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model B)"] = len(unique_errors_a) / len(
+                test_loader.dataset
+            )
+            metrics[f"Model_R_{i+1}_A_{j+1}"]["Error Consistency"] = len(common_errors) / (
+                len(errors_r) + len(errors_a) - len(common_errors)
+            )
             metrics[f"Model_R_{i+1}_A_{j+1}"]["Error Diversity Index"] = len(unique_errors_r) + len(unique_errors_a)
 
     return metrics
+
 
 if __name__ == "__main__":
     import argparse
