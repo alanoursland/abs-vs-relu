@@ -26,6 +26,33 @@ class LeNet(nn.Module):
         x = self.fc3(x)
         return x
 
+    def partial(self, x, layer_index):
+        if layer_index == 0:
+            return x
+        x = self.activation(self.conv1(x))
+        if layer_index == 1:
+            return x
+        x = F.max_pool2d(x, kernel_size=2, stride=2)
+        if layer_index == 2:
+            return x
+        x = self.activation(self.conv2(x))
+        if layer_index == 3:
+            return x
+        x = F.max_pool2d(x, kernel_size=2, stride=2)
+        if layer_index == 4:
+            return x
+        x = x.view(-1, 16 * 5 * 5)
+        if layer_index == 5:
+            return x
+        x = self.activation(self.fc1(x))
+        if layer_index == 6:
+            return x
+        x = self.activation(self.fc2(x))
+        if layer_index == 7:
+            return x
+        x = self.fc3(x)
+        return x
+
 
 if __name__ == "__main__":
     # Example usage

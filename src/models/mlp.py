@@ -23,6 +23,16 @@ class MLP(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+    def partial(self, x, layer_index):
+        count = 0
+        for layer in self.network:
+            if count >= layer_index:
+                return x
+            x = layer(x)
+            count += 1
+        return x
+
+
 if __name__ == "__main__":
     # Example usage
     input_dim = 784  # For MNIST

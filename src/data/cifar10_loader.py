@@ -22,7 +22,7 @@ class GPUDataset(torch.utils.data.Dataset):
         return self.data.size(0)
 
 
-def load_cifar10(batch_size=128, download=True, data_dir="./datasets/CIFAR10"):
+def load_cifar10(batch_size=128, download=True, data_dir="./datasets/CIFAR10", transform_train=None, transform_test=None):
     """
     Load the CIFAR-10 dataset.
 
@@ -41,17 +41,19 @@ def load_cifar10(batch_size=128, download=True, data_dir="./datasets/CIFAR10"):
     mean = (0.4914, 0.4822, 0.4465)
     stddev = (0.2023, 0.1994, 0.2010)
 
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean, stddev), 
-    ])
+    if transform_train == None:
+        transform_train = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, stddev), 
+        ])
 
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),                 # Converts to tensor (scales pixel values to [0, 1])
-        transforms.Normalize(mean, stddev),  # Normalize with mean and stddev
-    ])
+    if transform_test == None:
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),                 # Converts to tensor (scales pixel values to [0, 1])
+            transforms.Normalize(mean, stddev),  # Normalize with mean and stddev
+        ])
 
     train_dataset = datasets.CIFAR10(root=data_dir, train=True, download=download, transform=transform_train)
     test_dataset = datasets.CIFAR10(root=data_dir, train=False, download=download, transform=transform_test)
