@@ -1,7 +1,7 @@
 python src/main.py --config configs/mnist_relu.json
 python src/main.py --config configs/mnist_abs.json
-python src/utils/ptest.py configs/cifar10_abs.json configs/cifar10_relu.json
-python src/utils/error_overlap.py configs/cifar10_abs.json configs/cifar10_relu.json
+python src/utils/ptest.py configs/mnist_abs.json configs/mnist_relu.json
+python src/utils/error_overlap.py configs/mnist_abs.json configs/mnist_relu.json
 
 python src/main.py --config configs/cifar10_relu.json
 python src/main.py --config configs/cifar10_abs.json

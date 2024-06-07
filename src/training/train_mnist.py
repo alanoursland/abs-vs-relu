@@ -3,16 +3,12 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
 import os
 import time
 
 from models.lenet import LeNet
 from data.mnist_loader import load_mnist
-from utils.metrics import calculate_metrics
 from utils.visualization import plot_loss_curves
-from src.config import Config  # Import Config class
 
 
 def train(model, device, train_loader, optimizer, criterion, epoch, log_interval=100):
@@ -124,3 +120,34 @@ def main(config):
 # p-value: 0.0033
 
 # The difference in accuracies is statistically significant, indicating that our method performs better than their method.
+
+# Comparison: A2A
+#   Common: 0.0065 ± 0.0006
+#   Unique: 0.0059 ± 0.0006
+#   Consistency: 0.3580 ± 0.0362
+#   Diversity: 117.6000 ± 9.3188
+# Comparison: B2B
+#   Common: 0.0120 ± 0.0005
+#   Unique: 0.0024 ± 0.0006
+#   Consistency: 0.7173 ± 0.0221
+#   Diversity: 47.2000 ± 3.8158
+# Comparison: A2B
+#   Common: 0.0052 ± 0.0005
+#   Unique0: 0.0072 ± 0.0007
+#   Unique1: 0.0091 ± 0.0008
+#   Consistency: 0.2440 ± 0.0265
+#   Diversity: 162.8800 ± 11.5076
+
+# Consensus models
+
+# Configs used: ['configs/mnist_abs.json']
+# Average loss: 0.0015
+# Average accuracy: 99.07%
+
+# Configs used: ['configs/mnist_relu.json']
+# Average loss: 0.0015
+# Average accuracy: 98.57%
+
+# Configs used: ['configs/mnist_abs.json', 'configs/mnist_relu.json']
+# Average loss: 0.0015
+# Average accuracy: 99.10%

@@ -10,12 +10,27 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from src.models.lenet import LeNet
+from src.models.resnet18 import ResNet18
 from src.data.mnist_loader import load_mnist
+from src.data.cifar10_loader import load_cifar10
+from src.data.cifar100_loader import load_cifar100
 from src.config import Config
 
 
-def load_model(model_path, activation_function):
-    model = LeNet(activation_function=activation_function)
+def load_model(config, run):
+    activation_function = config.get_activation_function(config.activation_function)
+    model_path = os.path.join(
+        config.output_dir, f"{run:04d}", f"{config.dataset}_{config.model.lower()}_{config.activation.lower()}.pth"
+    )
+    if config.model == "lenet":
+        model = LeNet(activation_function=activation_function)
+    elif config.model == "resnet18" and config.dataset == "cifar10":
+        model = ResNet18(10, activation_function=activation_function)
+    elif config.model == "resnet18" and config.dataset == "cifar100":
+        model = ResNet18(100, activation_function=activation_function)
+    else:
+        raise f"Unknown model type {config_a.model}"
+
     model.load_state_dict(torch.load(model_path))
     model.eval()
     return model
@@ -41,22 +56,27 @@ def evaluate_model(model, test_loader, device):
 
 
 def error_overlap_analysis(config_a, config_b, device):
-    _, test_loader = load_mnist(batch_size=config_a.test_batch_size, cuda_device=device, use_gpu=True)
+    if config_a.dataset != config_b.dataset:
+        raise "Cannot compare two different datasets"
+    
+    if config_a.dataset == "mnist":
+        _, test_loader = load_mnist(batch_size=config_a.test_batch_size, cuda_device=device, use_gpu=True)
+    elif config_a.dataset == "cifar10":
+        _, test_loader = load_cifar10(batch_size=config_a.test_batch_size)
+    elif config_a.dataset == "cifar100":
+        _, test_loader = load_cifar100(batch_size=config_a.test_batch_size)
+    else:
+        raise f"Unknown dataset {config_a.dataset}"
+
 
     errors_a = []
     errors_b = []
 
     for run in range(1, config_a.num_runs + 1):
-        model_path_a = os.path.join(
-            config_a.output_dir, f"{run:04d}", f"mnist_{config_a.model.lower()}_{config_a.activation.lower()}.pth"
-        )
-        model_a = load_model(model_path_a, config_a.get_activation_function(config_a.activation_function))
+        model_a = load_model(config_a, run)
         errors_a.append(evaluate_model(model_a, test_loader, device))
 
-        model_path_b = os.path.join(
-            config_b.output_dir, f"{run:04d}", f"mnist_{config_b.model.lower()}_{config_b.activation.lower()}.pth"
-        )
-        model_b = load_model(model_path_b, config_b.get_activation_function(config_b.activation_function))
+        model_b = load_model(config_b, run)
         errors_b.append(evaluate_model(model_b, test_loader, device))
 
     metrics = {
