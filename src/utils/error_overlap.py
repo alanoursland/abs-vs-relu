@@ -2,8 +2,7 @@ import os
 import json
 import torch
 from collections import defaultdict
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
+import numpy as np
 
 # Add the src directory to the Python path
 import sys
@@ -32,8 +31,10 @@ def evaluate_model(model, test_loader, device):
             output = model(data)
             pred = output.argmax(dim=1, keepdim=True)
             incorrect_mask = pred.ne(target.view_as(pred)).squeeze()
+            batch_base_index = batch_idx * test_loader.batch_size
+            batch_incorrect_indices = incorrect_mask.nonzero(as_tuple=False)
             incorrect_indices.extend(
-                (batch_idx * test_loader.batch_size + incorrect_mask.nonzero(as_tuple=False)).squeeze().tolist()
+                (batch_base_index + batch_incorrect_indices).squeeze(1).tolist()
             )
 
     return incorrect_indices
@@ -58,28 +59,77 @@ def error_overlap_analysis(config_a, config_b, device):
         model_b = load_model(model_path_b, config_b.get_activation_function(config_b.activation_function))
         errors_b.append(evaluate_model(model_b, test_loader, device))
 
-    metrics = defaultdict(dict)
+    metrics = {
+        "A2A": defaultdict(list),
+        "B2B": defaultdict(list),
+        "A2B": defaultdict(list),
+    }
 
-    for i, errors_r in enumerate(errors_a):
-        for j, errors_a in enumerate(errors_b):
-            common_errors = set(errors_r) & set(errors_a)
-            unique_errors_r = set(errors_r) - set(errors_a)
-            unique_errors_a = set(errors_a) - set(errors_r)
-            union_errors = set(errors_r) | set(errors_a)
+    # Compare A to A
+    for i, a0 in enumerate(errors_a):
+        for j, b1 in enumerate(errors_a):
+            # Only compare each pair once
+            if i < j:
+                common_errors = set(a0) & set(b1)
+                unique_errors_a0 = set(a0) - set(b1)
+                unique_errors_b1 = set(b1) - set(a0)
+                sample_count = len(test_loader.dataset)
+                common_count = len(common_errors)
+                unique0_count = len(unique_errors_a0)
+                unique1_count = len(unique_errors_b1)
+                metrics["A2A"]["Common"].append(common_count / sample_count)
+                metrics["A2A"]["Unique"].append(unique0_count / sample_count)
+                metrics["A2A"]["Unique"].append(unique1_count / sample_count)
+                metrics["A2A"]["Consistency"].append(common_count / (len(a0) + len(b1) - common_count))
+                metrics["A2A"]["Diversity"].append(unique0_count + unique1_count)
 
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Common Error Rate"] = len(common_errors) / len(test_loader.dataset)
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model A)"] = len(unique_errors_r) / len(
-                test_loader.dataset
-            )
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Unique Error Rate (Model B)"] = len(unique_errors_a) / len(
-                test_loader.dataset
-            )
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Error Consistency"] = len(common_errors) / (
-                len(errors_r) + len(errors_a) - len(common_errors)
-            )
-            metrics[f"Model_R_{i+1}_A_{j+1}"]["Error Diversity Index"] = len(unique_errors_r) + len(unique_errors_a)
+    # Compare B to B
+    for i, a0 in enumerate(errors_b):
+        for j, b1 in enumerate(errors_b):
+            # Only compare each pair once
+            if i < j:
+                common_errors = set(a0) & set(b1)
+                unique_errors_a0 = set(a0) - set(b1)
+                unique_errors_b1 = set(b1) - set(a0)
+                sample_count = len(test_loader.dataset)
+                common_count = len(common_errors)
+                unique0_count = len(unique_errors_a0)
+                unique1_count = len(unique_errors_b1)
+                metrics["B2B"]["Common"].append(common_count / sample_count)
+                metrics["B2B"]["Unique"].append(unique0_count / sample_count)
+                metrics["B2B"]["Unique"].append(unique1_count / sample_count)
+                metrics["B2B"]["Consistency"].append(common_count / (len(a0) + len(b1) - common_count))
+                metrics["B2B"]["Diversity"].append(unique0_count + unique1_count)
 
-    return metrics
+    # Compare A to B
+    for i, a0 in enumerate(errors_a):
+        for j, b1 in enumerate(errors_b):
+            # Compare all pairs
+            common_errors = set(a0) & set(b1)
+            unique_errors_a0 = set(a0) - set(b1)
+            unique_errors_b1 = set(b1) - set(a0)
+            sample_count = len(test_loader.dataset)
+            common_count = len(common_errors)
+            unique0_count = len(unique_errors_a0)
+            unique1_count = len(unique_errors_b1)
+            metrics["A2B"]["Common"].append(common_count / sample_count)
+            metrics["A2B"]["Unique0"].append(unique0_count / sample_count)
+            metrics["A2B"]["Unique1"].append(unique1_count / sample_count)
+            metrics["A2B"]["Consistency"].append(common_count / (len(a0) + len(b1) - common_count))
+            metrics["A2B"]["Diversity"].append(unique0_count + unique1_count)
+
+
+    # Collect the data into a summary
+    summary = {}
+    for collection, collection_metrics in metrics.items():
+        summary[collection] = {}
+        for metric, values in collection_metrics.items():
+            summary[collection][metric] = {
+                "mean": np.mean(values),
+                "stddev": np.std(values),
+            }
+
+    return summary
 
 
 if __name__ == "__main__":
@@ -107,5 +157,7 @@ if __name__ == "__main__":
     # Print metrics
     for key, value in metrics.items():
         print(f"Comparison: {key}")
-        for metric, result in value.items():
-            print(f"  {metric}: {result:.4f}")
+        for metric, result  in value .items():
+            mean = result["mean"]
+            stddev = result["stddev"]
+            print(f"  {metric}: {mean:.4f} ± {stddev:.4f}")
