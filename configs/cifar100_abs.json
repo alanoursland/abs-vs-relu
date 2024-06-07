@@ -13,5 +13,5 @@
     "log_interval": 1000,
     "save_model": true,
     "output_dir": "experiments/CIFAR100_ResNet18_Abs",
-    "num_runs": 1
+    "num_runs": 5
 }
