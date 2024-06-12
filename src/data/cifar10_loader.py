@@ -7,21 +7,6 @@ import torchvision.transforms as transforms
 from PIL import Image
 from torchvision import datasets, transforms
 
-
-class GPUDataset(torch.utils.data.Dataset):
-    def __init__(self, data, targets):
-        self.data = data
-        self.targets = targets
-
-    def __getitem__(self, index):
-        x = self.data[index]
-        y = self.targets[index]
-        return x, y
-
-    def __len__(self):
-        return self.data.size(0)
-
-
 def load_cifar10(batch_size=128, download=True, data_dir="./datasets/CIFAR10", transform_train=None, transform_test=None):
     """
     Load the CIFAR-10 dataset.

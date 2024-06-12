@@ -6,19 +6,6 @@ from transformers import BertTokenizer
 from datasets import load_dataset
 from torch.nn.utils.rnn import pad_sequence
 
-class GPUDataset(torch.utils.data.Dataset):
-    def __init__(self, data, targets):
-        self.data = data
-        self.targets = targets
-
-    def __getitem__(self, index):
-        x = self.data[index]
-        y = self.targets[index]
-        return x, y
-
-    def __len__(self):
-        return len(self.data)
-
 def tokenize_function(examples, tokenizer, max_length):
     return tokenizer(examples['text'], padding='max_length', truncation=True, max_length=max_length)
 

@@ -1,21 +1,8 @@
 # src/data/mnist_loader.py
 import torch
-from torchvision import datasets, transforms
 import torch.utils.data
-
-
-class GPUDataset(torch.utils.data.Dataset):
-    def __init__(self, data, targets):
-        self.data = data
-        self.targets = targets
-
-    def __getitem__(self, index):
-        x = self.data[index]
-        y = self.targets[index]
-        return x, y
-
-    def __len__(self):
-        return len(self.data)
+from torchvision import datasets, transforms
+from utils.gpu_dataset import GPUDataset
 
 
 def load_mnist(batch_size=64, download=True, data_dir="./datasets/MNIST", cuda_device="cuda", use_gpu=False):
@@ -56,9 +43,3 @@ def load_mnist(batch_size=64, download=True, data_dir="./datasets/MNIST", cuda_d
 
     return train_loader, test_loader
 
-
-if __name__ == "__main__":
-    # Example usage
-    train_loader, test_loader = load_mnist(use_gpu=True)
-    print(f"Number of training batches: {len(train_loader)}")
-    print(f"Number of test batches: {len(test_loader)}")
