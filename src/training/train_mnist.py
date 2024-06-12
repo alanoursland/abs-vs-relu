@@ -9,48 +9,7 @@ import time
 from models.lenet import LeNet
 from data.mnist_loader import load_mnist
 from utils.visualization import plot_loss_curves
-
-
-def train(model, device, train_loader, optimizer, criterion, epoch, log_interval=100):
-    model.train()
-    train_loss = 0
-    for batch_idx, (data, target) in enumerate(train_loader):
-        data, target = data.to(device), target.to(device)
-        optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
-        loss.backward()
-        optimizer.step()
-        train_loss += loss.item()
-        # if batch_idx % log_interval == 0:
-        #     print(
-        #         f"Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} "
-        #         f"({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}"
-        #     )
-    train_loss /= len(train_loader.dataset)
-    return train_loss
-
-
-def test(model, device, test_loader, criterion):
-    model.eval()
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += criterion(output, target).item()  # Sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
-            correct += pred.eq(target.view_as(pred)).sum().item()
-
-    test_loss /= len(test_loader.dataset)
-    accuracy = 100.0 * correct / len(test_loader.dataset)
-    print(
-        f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} "
-        f"({accuracy:.2f}%)\n"
-    )
-    return test_loss, accuracy
-
+from training.train_utils import train, test
 
 def main(config):
     torch.manual_seed(config.seed)
@@ -61,6 +20,13 @@ def main(config):
 
     activation_function = config.get_activation_function(config.activation_function)
     model = LeNet(activation_function=activation_function).to(config.device)
+
+    # Get the entire test set in a single batch
+    X_test, Y_test = next(iter(test_loader))
+
+    # Move the data to GPU
+    X_test = X_test.to(config.device)
+    Y_test = Y_test.to(config.device)
 
     optimizer = optim.SGD(model.parameters(), lr=config.learning_rate, momentum=config.momentum)
     criterion = nn.CrossEntropyLoss()
@@ -73,7 +39,7 @@ def main(config):
 
     for epoch in range(1, config.epochs + 1):
         train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, config.log_interval)
-        test_loss, accuracy = test(model, config.device, test_loader, criterion)
+        test_loss, accuracy = test(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
         accuracies.append(accuracy)

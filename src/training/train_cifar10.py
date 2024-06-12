@@ -11,47 +11,7 @@ import time
 from models.resnet18 import ResNet18
 from data.cifar10_loader import load_cifar10
 from utils.visualization import plot_loss_curves
-
-
-def train(model, device, train_loader, optimizer,  scheduler, criterion,epoch, log_interval=100):
-    model.train()
-    train_loss = 0
-    for batch_idx, (data, target) in enumerate(train_loader):
-        data, target = data.to(device), target.to(device)
-        optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
-        loss.backward()
-        optimizer.step()
-        train_loss += loss.item()
-        if batch_idx % log_interval == 0:
-            print(
-                f"Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} "
-                f"({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}"
-            )
-    if scheduler != None:
-        scheduler.step()
-    train_loss /= len(train_loader.dataset)
-    return train_loss
-
-
-def test(model, X_test, Y_test, criterion, epoch):
-    model.eval()
-    test_loss = 0
-    correct = 0
-    sample_count = Y_test.size(0)
-    with torch.no_grad():
-        output = model(X_test)
-        test_loss = criterion(output, Y_test).item() * sample_count
-        pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
-        correct += pred.eq(Y_test.view_as(pred)).sum().item()
-
-    test_loss /= sample_count
-    accuracy = 100.0 * correct / sample_count
-    print(
-        f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{sample_count} " f"({accuracy:.2f}%)"
-    )
-    return test_loss, accuracy
+from training.train_utils import train, test
 
 
 def main(config):
@@ -87,7 +47,9 @@ def main(config):
     start_time = time.time()  # Record the start time
 
     for epoch in range(1, config.epochs + 1):
-        train_loss = train(model, config.device, train_loader, optimizer, scheduler, criterion, epoch, config.log_interval)
+        train_loss = train(
+            model, config.device, train_loader, optimizer, criterion, epoch, scheduler, config.log_interval
+        )
         test_loss, accuracy = test(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)

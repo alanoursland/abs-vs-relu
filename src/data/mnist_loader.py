@@ -39,7 +39,7 @@ def load_mnist(batch_size=64, download=True, data_dir="./datasets/MNIST", cuda_d
 
     # Create DataLoader objects for the training and test sets
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=len(test_dataset), shuffle=False)
 
     return train_loader, test_loader
 
