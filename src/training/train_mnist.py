@@ -9,13 +9,9 @@ import time
 from models.lenet import LeNet
 from data.mnist_loader import load_mnist
 from utils.visualization import plot_loss_curves
-from training.train_utils import train, test
+from training.train_utils import train, test_fast
 
 def main(config):
-    torch.manual_seed(config.seed)
-    if config.device.type == "cuda":
-        torch.cuda.manual_seed(config.seed)
-
     train_loader, test_loader = load_mnist(batch_size=config.batch_size, cuda_device=config.device, use_gpu=True)
 
     activation_function = config.get_activation_function(config.activation_function)
@@ -39,7 +35,7 @@ def main(config):
 
     for epoch in range(1, config.epochs + 1):
         train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, config.log_interval)
-        test_loss, accuracy = test(model, X_test, Y_test, criterion, epoch)
+        test_loss, accuracy = test_fast(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
         accuracies.append(accuracy)

@@ -1,0 +1,19 @@
+{
+    "dataset": "imdb",
+    "model": "lstm",
+    "activation": "exp_abs",
+    "hidden_size": 100,
+    "num_layers": 2,
+    "num_classes": 2,
+    "batch_size": 64,
+    "test_batch_size": 25000,
+    "epochs": 10,
+    "learning_rate": 0.01,
+    "momentum": 0.5,
+    "no_cuda": false,
+    "seed": 1,
+    "log_interval": 100,
+    "save_model": true,
+    "output_dir": "experiments/IMDB_LSTM_abs",
+    "num_runs": 5
+}

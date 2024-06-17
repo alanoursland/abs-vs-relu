@@ -23,6 +23,9 @@ class Config:
         self.save_model = config_dict.get("save_model", True)
 
         # Model configurations
+        self.hidden_size = config_dict.get("hidden_size", 0)
+        self.num_layers = config_dict.get("num_layers", 0)
+        self.num_classes = config_dict.get("num_classes", 0)
         self.activation_function = config_dict.get("activation", 'relu')
 
         # Device configurations

@@ -11,13 +11,9 @@ import time
 from models.resnet18 import ResNet18
 from data.cifar100_loader import load_cifar100
 from utils.visualization import plot_loss_curves
-from training.train_utils import train, test
+from training.train_utils import train, test_fast
 
 def main(config):
-    torch.manual_seed(config.seed)
-    if config.device.type == "cuda":
-        torch.cuda.manual_seed(config.seed)
-
     train_loader, test_loader = load_cifar100(batch_size=config.batch_size)
 
     activation_function = config.get_activation_function(config.activation_function)
@@ -47,7 +43,7 @@ def main(config):
 
     for epoch in range(1, config.epochs + 1):
         train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, scheduler, config.log_interval)
-        test_loss, accuracy = test(model, X_test, Y_test, criterion, epoch)
+        test_loss, accuracy = test_fast(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
         accuracies.append(accuracy)

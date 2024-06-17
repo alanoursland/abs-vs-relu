@@ -9,6 +9,8 @@ def train(model, device, train_loader, optimizer, criterion, epoch, scheduler=No
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
+        # print(f"output {output}")
+        # print(f"target {target}")
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
@@ -24,7 +26,7 @@ def train(model, device, train_loader, optimizer, criterion, epoch, scheduler=No
     return train_loss
 
 
-def test(model, X_test, Y_test, criterion, epoch):
+def test_fast(model, X_test, Y_test, criterion, epoch):
     model.eval()
     test_loss = 0
     correct = 0
@@ -39,5 +41,27 @@ def test(model, X_test, Y_test, criterion, epoch):
     accuracy = 100.0 * correct / sample_count
     print(
         f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{sample_count} " f"({accuracy:.2f}%)"
+    )
+    return test_loss, accuracy
+
+def test(model, test_loader, criterion, epoch, device='cuda'):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    sample_count = 0
+    
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += criterion(output, target).item() * data.size(0)
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+            sample_count += data.size(0)
+
+    test_loss /= sample_count
+    accuracy = 100.0 * correct / sample_count
+    print(
+        f"{epoch}: Test set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{sample_count} ({accuracy:.2f}%)"
     )
     return test_loss, accuracy
