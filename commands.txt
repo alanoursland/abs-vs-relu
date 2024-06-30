@@ -28,3 +28,13 @@ python src/main.py --config configs/imdb_relu.json
 python src/main.py --config configs/imdb_sigmoid.json
 python src/main.py --config configs/imdb_abs.json
 python src/utils/ptest.py configs/imdb_relu_reference.json configs/imdb_relu.json
+
+python src\data\adult_loader.py
+
+
+python src\data\winequality_loader.py
+
+
+python src\data\iris_loader.py
+
+

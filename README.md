@@ -60,15 +60,13 @@ project_root/
 
 The following datasets are used in this study:
 - **Image Classification:** MNIST, CIFAR-10, CIFAR-100
-- **Natural Language Processing:** IMDB (sentiment analysis), AG News (text classification)
-- **Tabular Data:** UCI Adult dataset, Wine Quality dataset
+- **Tabular Data:** UCI Adult dataset, Wine Quality dataset, Iris
 
 ## Model Architectures
 
 Different model architectures are employed to cover various complexities and types:
 - **Convolutional Neural Networks (CNNs):** LeNet for MNIST, ResNet-18 for CIFAR-10 and CIFAR-100
-- **Recurrent Neural Networks (RNNs):** LSTM for IMDB and AG News
-- **Fully Connected Networks (FCNs):** 3-layer MLP for UCI Adult and Wine Quality datasets
+- **Fully Connected Networks (FCNs):** 3-layer MLP for UCI Adult, Wine Quality, and Iris datasets
 
 ## Experiments
 
