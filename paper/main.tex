@@ -9,7 +9,7 @@
 
 \geometry{margin=1in}
 
-\title{Neural Networks as Nearest Neighbor: Abs Activation Functions Learn Gaussian Clusters}
+\title{Neural Networks as Nearest Neighbor: Abs Activation Functions for Learning Gaussian Clusters}
 \author{Alan Oursland}
 \date{\today}
 
@@ -29,12 +29,11 @@ function due to its simplicity and effectiveness in mitigating the vanishing gra
 However, the quest for alternative activation functions that can offer improved performance or 
 interpretability remains an active area of research.
 
-This paper introduces a novel perspective on activation functions by examining the absolute value 
-function (Abs) as an alternative to ReLU. Our investigation is motivated by a key theoretical 
-insight: there exists a homomorphism between Gaussian clusters and linear separators with absolute 
-value activation functions. This relationship suggests that neural networks utilizing Abs 
-activations can implicitly learn to represent Gaussian clusters, potentially offering enhanced 
-interpretability and performance in certain scenarios.
+Before delving into neural networks, it's important to consider one of the fundamental classification methods in machine learning: k-Nearest Neighbors (kNN). This simple yet effective algorithm classifies data points based on the majority class of their k nearest neighbors. However, kNN faces limitations, particularly with high-dimensional data and when the underlying data structure is complex.
+
+To address these limitations, researchers have developed advanced kNN methods that incorporate Gaussian representations and metric learning. These approaches, such as Locally Adaptive Metric Nearest-Neighbor (LMNN), Adaptive Nearest Neighbor Classification, and Discriminant Adaptive Nearest Neighbor Classification (DANN), aim to improve classification by adapting to local data structures.
+
+This paper introduces a novel perspective that bridges the gap between these advanced kNN methods and neural networks by examining the absolute value function (Abs) as an alternative to ReLU. Our investigation is motivated by a key theoretical insight: there exists a homomorphism between Gaussian clusters and linear separators with absolute value activation functions. This relationship suggests that neural networks utilizing Abs activations can implicitly learn to represent Gaussian clusters, potentially offering enhanced interpretability and performance in certain scenarios.
 
 The primary objectives of this study are:
 \begin{enumerate}
@@ -44,6 +43,7 @@ various datasets and model architectures.
 Gaussian cluster representation.
 \item To investigate the practical implications of the theoretical homomorphism between Gaussians 
 and linear separators with Abs activations.
+\item To examine the connections between advanced kNN methods and neural networks with Abs activations.
 \end{enumerate}
 
 This research encompasses a comprehensive empirical study using diverse datasets, including image 
@@ -66,6 +66,28 @@ concludes with a summary and directions for future research.
 \section{Theoretical Foundation}
 The core of our research lies in a novel discovery: a homomorphism between Gaussian clusters and 
 linear separators with absolute value activation functions. This theoretical foundation explains how neural networks utilizing absolute value activations can implicitly learn to represent Gaussian clusters, offering a new perspective on the learning capabilities of these networks.
+
+\subsection{k-Nearest Neighbors (kNN)}
+
+We begin by examining the k-Nearest Neighbors algorithm, a fundamental classification method in machine learning. In its basic form, kNN classifies a data point based on the majority class of its k nearest neighbors in the feature space. This approach implicitly assumes that the data points form spherical clusters in the feature space, which can be viewed as spherical Gaussian distributions.
+
+\subsection{Advanced kNN Methods}
+
+To overcome the limitations of basic kNN, several advanced methods have been developed:
+
+\begin{itemize}
+\item Locally Adaptive Metric Nearest-Neighbor (LMNN): This method learns a Mahalanobis distance metric to improve kNN classification. By learning a global linear transformation of the feature space, LMNN can adapt to the overall structure of the data.
+\item Adaptive Nearest Neighbor Classification: This approach adapts local metrics based on the covariance structure of nearby points. It allows for more flexible decision boundaries that can better capture the local structure of the data.
+\item Discriminant Adaptive Nearest Neighbor Classification (DANN): DANN adapts the metric locally to the structure of the data to improve classification. It combines ideas from discriminant analysis with adaptive nearest neighbor methods.
+\end{itemize}
+
+These advanced methods implicitly or explicitly model the data using Gaussian distributions, moving beyond the spherical assumption of basic kNN.
+
+\subsection{From kNN to Gaussian Clusters}
+
+As we transition from basic kNN to these more sophisticated methods, we move from spherical clusters to full covariance Gaussian clusters. However, using full covariance matrices can be computationally expensive and may lead to issues with singularity, especially in high-dimensional spaces.
+
+To address these challenges, we turn to Principal Component Analysis (PCA). PCA allows us to represent the Gaussian clusters more efficiently by focusing on the principal components that capture the most variance in the data.
 
 \subsection{From PCA to Mahalanobis Distance}
 Our analysis begins with Principal Component Analysis (PCA) applied to a multivariate Gaussian distribution. We focus on individual one-dimensional Gaussians along the principal component axes in the original data space. This approach allows us to decompose the complex multivariate structure into more manageable components.
@@ -124,6 +146,7 @@ The homomorphism we've uncovered has several important implications:
 \item Gaussian clusters can be effectively represented as linear separators with absolute value activations.
 \item Neural networks employing absolute value activations have the capacity to implicitly learn and represent Gaussian clusters in the data.
 \item The decision boundaries formed by these separators correspond to surfaces of equal Mahalanobis distance from the Gaussian means, providing a geometrically interpretable structure to the learned representations.
+\item This approach unifies concepts from kNN, Gaussian mixture models, and neural networks, providing a coherent framework for understanding classification and representation learning.
 \end{enumerate}
 
 This theoretical foundation bridges the gap between probabilistic models (Gaussians) and discriminative models (linear separators). It offers a novel perspective on how neural networks can learn and represent data distributions, potentially leading to more interpretable models and improved performance in certain scenarios.
