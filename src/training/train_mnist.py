@@ -34,7 +34,7 @@ def main(config):
     start_time = time.time()  # Record the start time
 
     for epoch in range(1, config.epochs + 1):
-        train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, config.log_interval)
+        train_loss = train(model, config.device, train_loader, optimizer, criterion, epoch, scheduler=None, log_interval=config.log_interval)
         test_loss, accuracy = test_fast(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
@@ -64,52 +64,54 @@ def main(config):
 
     return results
 
-# Test set results for cifar10 resnet18 abs:
-# Final test losses: ['0.0007', '0.0007', '0.0007', '0.0007', '0.0007']
-# Final accuracies: ['98.51', '98.70', '98.50', '98.60', '98.52']
-# Training times: ['20.49', '20.49', '20.43', '20.48', '20.49']
-# Average loss: 0.0007
-# Average accuracy: 98.57%
+# Test set results for mnist lenet abs:
+# Final test losses: ['0.0415', '0.0380', '0.0352', '0.0423', '0.0393']
+# Final accuracies: ['98.75', '98.87', '98.97', '98.61', '98.64']
+# Training times: ['20.43', '19.90', '20.03', '19.99', '20.01']
+# Average loss: 0.0392
+# Average accuracy: 98.77%
 
-# # Test set results for cifar10 resnet18 relu:
-# Final test losses: ['0.0006', '0.0005', '0.0006', '0.0006', '0.0006']
-# Final accuracies: ['98.76', '98.84', '98.75', '98.77', '98.67']
-# Training times: ['21.99', '21.31', '21.22', '21.24', '21.14']
-# Average loss: 0.0006
-# Average accuracy: 98.76%
+# Test set results for mnist lenet relu:
+# Final test losses: ['0.0482', '0.0451', '0.0451', '0.0436', '0.0426']
+# Final accuracies: ['98.49', '98.68', '98.56', '98.62', '98.55']
+# Training times: ['19.44', '19.39', '19.70', '19.88', '19.72']
+# Average loss: 0.0449
+# Average accuracy: 98.58%
 
 # t-statistic: 4.1216 
 # p-value: 0.0033
 
+# t-statistic: 2.4914324567779844
+# p-value: 0.03743855894261221
+
 # The difference in accuracies is statistically significant, indicating that our method performs better than their method.
 
 # Comparison: A2A
-#   Common: 0.0065 ± 0.0006
-#   Unique: 0.0059 ± 0.0006
-#   Consistency: 0.3580 ± 0.0362
-#   Diversity: 117.6000 ± 9.3188
+#   Common: 0.0051 ± 0.0005
+#   Unique: 0.0073 ± 0.0013
+#   Consistency: 0.2598 ± 0.0267
+#   Diversity: 145.0000 ± 13.5425
 # Comparison: B2B
-#   Common: 0.0120 ± 0.0005
-#   Unique: 0.0024 ± 0.0006
-#   Consistency: 0.7173 ± 0.0221
-#   Diversity: 47.2000 ± 3.8158
+#   Common: 0.0066 ± 0.0004
+#   Unique: 0.0076 ± 0.0007
+#   Consistency: 0.3047 ± 0.0247
+#   Diversity: 151.6000 ± 10.6790
 # Comparison: A2B
-#   Common: 0.0052 ± 0.0005
-#   Unique0: 0.0072 ± 0.0007
-#   Unique1: 0.0091 ± 0.0008
-#   Consistency: 0.2440 ± 0.0265
-#   Diversity: 162.8800 ± 11.5076
-
+#   Common: 0.0056 ± 0.0004
+#   Unique0: 0.0067 ± 0.0012
+#   Unique1: 0.0086 ± 0.0008
+#   Consistency: 0.2687 ± 0.0220
+#   Diversity: 153.1200 ± 12.9347
 # Consensus models
 
 # Configs used: ['configs/mnist_abs.json']
-# Average loss: 0.0015
-# Average accuracy: 99.07%
+# Average loss: 0.0001
+# Average accuracy: 99.29%
 
 # Configs used: ['configs/mnist_relu.json']
-# Average loss: 0.0015
-# Average accuracy: 98.57%
+# Average loss: 0.0001
+# Average accuracy: 99.12%
 
 # Configs used: ['configs/mnist_abs.json', 'configs/mnist_relu.json']
-# Average loss: 0.0015
-# Average accuracy: 99.10%
+# Average loss: 0.0001
+# Average accuracy: 99.26%

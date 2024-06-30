@@ -1,9 +1,10 @@
 # src/data/mnist_loader.py
+
 import torch
 import torch.utils.data
 from torchvision import datasets, transforms
-from utils.gpu_dataset import GPUDataset
 
+from utils.gpu_dataset import GPUDataset
 
 def load_mnist(batch_size=64, download=True, data_dir="./datasets/MNIST", cuda_device="cuda", use_gpu=False):
     """

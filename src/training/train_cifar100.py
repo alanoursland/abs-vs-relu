@@ -77,47 +77,53 @@ def main(config):
     return results
 
 # Test set results for experiments/CIFAR100_ResNet18_Abs:
-# Final test losses: ['1.8746', '2.0900', '1.9631', '2.0767', '2.0798']
-# Final accuracies: ['67.51', '65.58', '66.88', '65.08', '65.85']
-# Training times: ['2281.48', '2281.90', '2279.20', '2279.65', '2281.14']
-# Average loss: 2.0168
-# Average accuracy: 66.18%
+# Final test losses: ['1.9638', '1.9446', '2.0571', '2.0289', '2.0041']
+# Final accuracies: ['67.12', '67.65', '66.18', '66.23', '65.80']
+# Training times: ['2608.55', '2608.79', '2609.03', '2633.13', '2614.63']
+# Average loss: 1.9997
+# Average accuracy: 66.60%
 
 # Test set results for experiments/CIFAR100_ResNet18_ReLU:
-# Final test losses: ['1.2627', '1.2602', '1.2797', '1.2823', '1.2784']
-# Final accuracies: ['73.31', '73.66', '73.17', '72.73', '72.85']
-# Training times: ['2271.07', '2265.05', '2259.17', '2259.63', '2365.16']
-# Average loss: 1.2727
-# Average accuracy: 73.14%
+# Final test losses: ['1.2666', '1.2814', '1.2835', '1.3217', '1.2877']
+# Final accuracies: ['72.95', '72.91', '73.04', '72.06', '73.23']
+# Training times: ['2582.55', '2584.83', '2588.47', '2586.90', '2584.66']
+# Average loss: 1.2882
+# Average accuracy: 72.84%
 
-# t-statistic: -14.69754458730309, p-value: 4.512193075844569e-07
+# t-statistic: -15.744364010380329, p-value: 2.645716845600714e-07
+
+# The difference in accuracies is statistically significant, indicating that our method performs worse than their method.
+
+# A: Abs
+# B: ReLU
 
 # Comparison: A2A
-#   Common: 0.2515 ± 0.0056
-#   Unique: 0.0867 ± 0.0074
-#   Consistency: 0.5919 ± 0.0096
-#   Diversity: 1734.0000 ± 47.7347
+#   Common: 0.2489 ± 0.0046
+#   Unique: 0.0851 ± 0.0056
+#   Consistency: 0.5938 ± 0.0072
+#   Diversity: 1702.4000 ± 28.1929
 # Comparison: B2B
-#   Common: 0.2027 ± 0.0021
-#   Unique: 0.0658 ± 0.0031
-#   Consistency: 0.6062 ± 0.0072
-#   Diversity: 1317.0000 ± 31.8779
+#   Common: 0.2038 ± 0.0017
+#   Unique: 0.0678 ± 0.0037
+#   Consistency: 0.6004 ± 0.0073
+#   Diversity: 1356.8000 ± 38.6311
 # Comparison: A2B
-#   Common: 0.2096 ± 0.0029
-#   Unique0: 0.1286 ± 0.0079
-#   Unique1: 0.0589 ± 0.0019
-#   Consistency: 0.5279 ± 0.0090
-#   Diversity: 1875.3600 ± 66.0230
+#   Common: 0.2120 ± 0.0033
+#   Unique0: 0.1220 ± 0.0062
+#   Unique1: 0.0596 ± 0.0032
+#   Consistency: 0.5386 ± 0.0094
+#   Diversity: 1816.6000 ± 58.6583
 
 # Consensus models
 
 # Configs used: ['configs/cifar100_abs.json']
 # Average loss: 0.0004
-# Average accuracy: 71.28%
+# Average accuracy: 71.92%
 
 # Configs used: ['configs/cifar100_relu.json']
 # Average loss: 0.0004
-# Average accuracy: 76.61%
+# Average accuracy: 76.55%
 
+# Configs used: ['configs/cifar100_abs.json', 'configs/cifar100_relu.json']
 # Average loss: 0.0004
-# Average accuracy: 76.15%
+# Average accuracy: 75.90%

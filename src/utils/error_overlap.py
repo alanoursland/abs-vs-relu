@@ -1,20 +1,19 @@
-import os
 import json
 import torch
 from collections import defaultdict
 import numpy as np
 
 # Add the src directory to the Python path
+import os
 import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-
-from src.models.lenet import LeNet
-from src.models.resnet18 import ResNet18
-from src.data.mnist_loader import load_mnist
-from src.data.cifar10_loader import load_cifar10
-from src.data.cifar100_loader import load_cifar100
-from src.config import Config
+from models.lenet import LeNet
+from models.resnet18 import ResNet18
+from data.mnist_loader import load_mnist
+from data.cifar10_loader import load_cifar10
+from data.cifar100_loader import load_cifar100
+from config import Config
 
 
 def load_model(config, run):

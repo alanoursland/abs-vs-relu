@@ -10,7 +10,8 @@ def sigmoid_or_exp_abs(x: torch.Tensor, activation: str = "sigmoid") -> torch.Te
     if activation == "sigmoid":
         return torch.sigmoid(x)
     elif activation == "exp_abs":
-        return torch.exp(-torch.abs(x))
+        # return torch.exp(-torch.abs(x))
+        return torch.abs(x)
     else:
         raise ValueError(f"Unsupported activation function: {activation}")
 
@@ -21,10 +22,14 @@ def exp_abs(x):
 
 def create_activation(activation: str = "sigmoid"):
     if activation == "sigmoid":
+        print("Creating sigmoid activation")
         return torch.sigmoid
     elif activation == "exp_abs":
-        return exp_abs
+        print("Creating exp_abs activation")
+        # return exp_abs
+        return torch.abs
     elif activation == "relu":
+        print("Creating relu activation")
         return torch.relu
     else:
         raise ValueError(f"Unsupported activation function: {activation}")
@@ -80,6 +85,11 @@ class LSTMCell(nn.Module):
         forget_gate = self.activation(forget_gate)
         output_gate = self.activation(output_gate)
         candidate_cell_state = torch.tanh(candidate_cell_state)
+
+        input_gate = torch.softmax(input_gate, dim=-1)
+        forget_gate = torch.softmax(forget_gate, dim=-1)
+        output_gate = torch.softmax(output_gate, dim=-1)
+
 
         # Update cell state
         cell_state = forget_gate * cell_state + input_gate * candidate_cell_state  # [64, 512, 100]

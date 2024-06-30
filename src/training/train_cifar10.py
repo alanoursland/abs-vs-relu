@@ -44,7 +44,7 @@ def main(config):
 
     for epoch in range(1, config.epochs + 1):
         train_loss = train(
-            model, config.device, train_loader, optimizer, criterion, epoch, scheduler, config.log_interval
+            model, config.device, train_loader, optimizer, criterion, epoch, scheduler=scheduler, log_interval=config.log_interval
         )
         test_loss, accuracy = test_fast(model, X_test, Y_test, criterion, epoch)
         train_losses.append(train_loss)
@@ -81,50 +81,53 @@ def main(config):
 
 
 # Test set results for experiments/CIFAR10_ResNet18_Abs:
-# Final test losses: ['0.5235', '0.4961', '0.5060', '0.5053', '0.5353']
-# Final accuracies: ['90.47', '90.64', '90.62', '90.48', '90.10']
-# Training times: ['2167.56', '2172.71', '2172.39', '2175.42', '2172.23']
-# Average loss: 0.5132
-# Average accuracy: 90.46%
+# Final test losses: ['0.4979', '0.4912', '0.5549', '0.5032', '0.5467']
+# Final accuracies: ['90.36', '90.85', '89.94', '90.22', '89.94']
+# Training times: ['2609.93', '2791.65', '2871.44', '2914.31', '2881.52']
+# Average loss: 0.5188
+# Average accuracy: 90.26%
 
 # Test set results for experiments/CIFAR10_ResNet18_ReLU:
-# Final test losses: ['0.3374', '0.3347', '0.3517', '0.3124', '0.3039']
-# Final accuracies: ['92.67', '93.22', '92.46', '93.22', '93.33']
-# Training times: ['2257.45', '2201.36', '2160.03', '2135.48', '2128.06']
-# Average loss: 0.3280
-# Average accuracy: 92.98%
+# Final test losses: ['0.3212', '0.3153', '0.3039', '0.3256', '0.3133']
+# Final accuracies: ['92.70', '93.03', '93.22', '92.86', '93.34']
+# Training times: ['2711.12', '2626.01', '2607.76', '2595.54', '2584.98']
+# Average loss: 0.3159
+# Average accuracy: 93.03%
 
-# t-statistic: -12.65118997027362, p-value: 1.4317883786698362e-06
+# t-statistic: -13.551055294955578, p-value: 8.447693559533877e-07
 
 # The difference in accuracies is statistically significant, indicating that our method performs worse than their method.
 
+# A: Abs
+# B: ReLU
+
 # Comparison: A2A
-#   Common: 0.0558 ± 0.0009
-#   Unique: 0.0396 ± 0.0019
-#   Consistency: 0.4132 ± 0.0088
-#   Diversity: 792.2000 ± 22.0808
+#   Common: 0.0556 ± 0.0015
+#   Unique: 0.0418 ± 0.0030
+#   Consistency: 0.3994 ± 0.0098
+#   Diversity: 836.0000 ± 27.5391
 # Comparison: B2B
-#   Common: 0.0427 ± 0.0019
-#   Unique: 0.0275 ± 0.0030
-#   Consistency: 0.4371 ± 0.0165
-#   Diversity: 550.0000 ± 25.1515
+#   Common: 0.0429 ± 0.0015
+#   Unique: 0.0268 ± 0.0019
+#   Consistency: 0.4445 ± 0.0119
+#   Diversity: 536.0000 ± 11.0272
 # Comparison: A2B
-#   Common: 0.0445 ± 0.0018
-#   Unique0: 0.0508 ± 0.0028
-#   Unique1: 0.0257 ± 0.0022
-#   Consistency: 0.3682 ± 0.0148
-#   Diversity: 764.8400 ± 30.6812
+#   Common: 0.0433 ± 0.0018
+#   Unique0: 0.0541 ± 0.0032
+#   Unique1: 0.0264 ± 0.0014
+#   Consistency: 0.3494 ± 0.0141
+#   Diversity: 805.6000 ± 28.9413
 
 # Consensus models
 
 # Configs used: ['configs/cifar10_abs.json']
 # Average loss: 0.0002
-# Average accuracy: 92.88%
+# Average accuracy: 92.70%
 
 # Configs used: ['configs/cifar10_relu.json']
 # Average loss: 0.0002
-# Average accuracy: 94.34%
+# Average accuracy: 94.46%
 
 # Configs used: ['configs/cifar10_abs.json', 'configs/cifar10_relu.json']
 # Average loss: 0.0002
-# Average accuracy: 94.13%
+# Average accuracy: 94.32%
