@@ -1,0 +1,267 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\geometry{margin=1in}
+
+\title{Neural Networks as Nearest Neighbor: Abs Activation Functions Learn Gaussian Clusters}
+\author{Alan Oursland}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+% Brief summary of the paper
+\end{abstract}
+
+\section{Introduction}
+Neural networks have revolutionized machine learning, achieving unprecedented performance across a 
+wide range of tasks. At the heart of these networks lies a crucial component: the activation 
+function. The Rectified Linear Unit (ReLU) has emerged as the de facto standard activation 
+function due to its simplicity and effectiveness in mitigating the vanishing gradient problem. 
+However, the quest for alternative activation functions that can offer improved performance or 
+interpretability remains an active area of research.
+
+This paper introduces a novel perspective on activation functions by examining the absolute value 
+function (Abs) as an alternative to ReLU. Our investigation is motivated by a key theoretical 
+insight: there exists a homomorphism between Gaussian clusters and linear separators with absolute 
+value activation functions. This relationship suggests that neural networks utilizing Abs 
+activations can implicitly learn to represent Gaussian clusters, potentially offering enhanced 
+interpretability and performance in certain scenarios.
+
+The primary objectives of this study are:
+\begin{enumerate}
+\item To demonstrate the effectiveness of the Abs activation function compared to ReLU across 
+various datasets and model architectures.
+\item To explore the interpretability benefits of Abs activations, particularly in the context of 
+Gaussian cluster representation.
+\item To investigate the practical implications of the theoretical homomorphism between Gaussians 
+and linear separators with Abs activations.
+\end{enumerate}
+
+This research encompasses a comprehensive empirical study using diverse datasets, including image 
+classification (MNIST, CIFAR-10, CIFAR-100) and tabular data (UCI Adult, Wine Quality, Iris). I 
+employ two main types of neural network architectures: Convolutional Neural Networks (CNNs) for 
+image data and Multilayer Perceptrons (MLPs) for tabular data. This selection ensures a thorough 
+comparison between Abs and ReLU activations across different data types and model complexities, 
+while also exploring scenarios where clustering capabilities may be particularly relevant.
+
+By bridging the gap between probabilistic models (Gaussians) and discriminative models (linear 
+separators), this work offers a new perspective on how neural networks learn and represent data 
+distributions. The findings have the potential to influence future neural network designs, 
+particularly in applications where model interpretability is crucial.
+
+The remainder of this paper is organized as follows: Section 2 presents the theoretical foundation 
+underlying our work, Section 3 describes our methodology and experimental setup, Section 4 
+presents our results, Section 5 discusses the implications of our findings, and Section 6 
+concludes with a summary and directions for future research.
+
+\section{Theoretical Foundation}
+The core of our research lies in a novel discovery: a homomorphism between Gaussian clusters and 
+linear separators with absolute value activation functions. This theoretical foundation explains how neural networks utilizing absolute value activations can implicitly learn to represent Gaussian clusters, offering a new perspective on the learning capabilities of these networks.
+
+\subsection{From PCA to Mahalanobis Distance}
+Our analysis begins with Principal Component Analysis (PCA) applied to a multivariate Gaussian distribution. We focus on individual one-dimensional Gaussians along the principal component axes in the original data space. This approach allows us to decompose the complex multivariate structure into more manageable components.
+
+For points projected onto these one-dimensional Gaussians, we derive the Mahalanobis distance formula:
+
+\begin{equation}
+D = \frac{|v^T(x - \mu)|}{\sqrt{\lambda}}
+\end{equation}
+
+Where:
+
+\begin{itemize}
+\item $v$ is the eigenvector corresponding to a principal component
+\item $x$ is the data point
+\item $\mu$ is the mean of the Gaussian
+\item $\lambda$ is the eigenvalue (variance) along the principal component
+\end{itemize}
+
+\subsection{Transformation to Linear Separators}
+
+The key insight emerges when we rearrange and simplify the Mahalanobis distance formula:
+
+\begin{equation}
+y = |Wx + b|
+\end{equation}
+
+Where:
+
+\begin{itemize}
+\item $W = \frac{v^T}{\sqrt{\lambda}}$
+\item $b = -\frac{v^T}{\sqrt{\lambda}}\mu$
+\end{itemize}
+
+This transformed equation reveals a striking similarity to a linear separator with an absolute value activation function:
+
+\begin{equation}
+y = Abs(Wx + b)
+\end{equation}
+
+\subsection{Comparison with ReLU Activation}
+
+The form we've derived is analogous to the widely-used ReLU-based linear separator in neural networks:
+
+\begin{equation}
+y = ReLU(Wx + b)
+\end{equation}
+
+This parallel underscores the potential of absolute value activations as an alternative to ReLU, with the added benefit of implicit Gaussian cluster representation.
+
+\subsection{Implications and Significance}
+
+The homomorphism we've uncovered has several important implications:
+
+\begin{enumerate}
+\item Gaussian clusters can be effectively represented as linear separators with absolute value activations.
+\item Neural networks employing absolute value activations have the capacity to implicitly learn and represent Gaussian clusters in the data.
+\item The decision boundaries formed by these separators correspond to surfaces of equal Mahalanobis distance from the Gaussian means, providing a geometrically interpretable structure to the learned representations.
+\end{enumerate}
+
+This theoretical foundation bridges the gap between probabilistic models (Gaussians) and discriminative models (linear separators). It offers a novel perspective on how neural networks can learn and represent data distributions, potentially leading to more interpretable models and improved performance in certain scenarios.
+In the subsequent sections, we will explore the practical implications of this theoretical insight through a series of experiments across various datasets and model architectures.
+
+\section{Methodology}
+
+Our study employs a comprehensive experimental approach to compare the performance of neural networks using Rectified Linear Unit (ReLU) and Absolute Value (Abs) activation functions across various datasets and model architectures.
+
+\subsection{Datasets and Model Architectures}
+We conduct experiments on six diverse datasets, encompassing both image classification and tabular data tasks:
+
+\begin{itemize}
+\item Image Classification:
+
+\begin{itemize}
+\item MNIST: Handwritten digit recognition (28x28 grayscale images, 10 classes)
+\item CIFAR-10: Object recognition (32x32 color images, 10 classes)
+\item CIFAR-100: Fine-grained object recognition (32x32 color images, 100 classes)
+\end{itemize}
+
+\item Tabular Data:
+
+\begin{itemize}
+\item UCI Adult: Income prediction based on census data
+\item Wine Quality: Wine quality rating prediction
+\item Iris: Flower species classification
+\end{itemize}
+
+\end{itemize}
+
+For each dataset, we employ the following model architectures:
+
+\begin{itemize}
+\item MNIST: LeNet-5 Convolutional Neural Network (CNN)
+\item CIFAR-10 and CIFAR-100: ResNet-18 CNN
+\item UCI Adult, Wine Quality, and Iris: Multilayer Perceptron (MLP)
+\end{itemize}
+
+For the MLP models used on tabular data, we propose a 3-layer architecture with hidden layer sizes adjusted based on the input dimensionality of each dataset. The specific configurations for these MLPs will be determined during the implementation phase.
+
+\subsection{Experimental Setup}
+
+Each experiment is conducted using PyTorch and runs on an NVIDIA GeForce RTX 3080 Ti GPU. We perform multiple runs (typically 5) for each experiment to ensure statistical significance. The hyperparameters and configuration details for each experiment are stored in JSON files, allowing for easy replication and modification of the experiments.
+For CIFAR-10 and CIFAR-100 datasets, we employ data augmentation techniques as described in the original ResNet paper, including random cropping and horizontal flipping.
+
+\subsection{Training and Evaluation}
+
+We use the pre-defined training and test splits provided by each dataset. The models are trained using stochastic gradient descent (SGD) with momentum. Learning rates, batch sizes, and other hyperparameters are specified in the configuration files for each experiment.
+
+The primary evaluation metric is classification accuracy on the test set. We also implement an error overlap analysis to assess the potential for ensemble models constructed from individual ReLU and Abs models.
+
+\subsection{Comparative Analysis}
+
+Our analysis focuses on several key aspects:
+
+\begin{enumerate}
+\item Performance Comparison: We compare the test accuracy of models using ReLU and Abs activations across all datasets.
+\item Statistical Significance: We use appropriate statistical tests (e.g., t-tests) to determine if the differences in performance between ReLU and Abs models are statistically significant.
+\item Error Overlap Analysis: We examine the extent to which errors made by ReLU and Abs models overlap, providing insights into the potential benefits of ensemble methods combining both activation functions.
+\item Training Dynamics: We analyze the training curves to compare convergence rates and stability between ReLU and Abs models.
+\end{enumerate}
+
+\subsection{Interpretability Analysis}
+
+[TBD: Specific techniques for interpretability analysis will be determined and implemented in future stages of the research.]
+
+\subsection{Reproducibility}
+
+To ensure reproducibility, we provide detailed configuration files, model architectures, and random seeds used in our experiments. All code and configuration files are made available in a public repository, allowing other researchers to replicate our results and build upon our work.
+
+\section{Results}
+
+Our experiments compare the performance of neural networks using Rectified Linear Unit (ReLU) and Absolute Value (Abs) activation functions across various datasets and model architectures. This section presents our findings, organized by dataset type and specific tasks.
+
+\subsection{Image Classification Tasks}
+
+\subsubsection{MNIST}
+
+We conducted experiments on the MNIST dataset using the LeNet-5 architecture. The results from 5 runs for each activation function are as follows:
+
+\begin{itemize}
+\item ReLU: Average Accuracy: 98.57%, Average Loss: 0.0007
+\item Abs: Average Accuracy: 98.76%, Average Loss: 0.0006
+\item Statistical Significance: t-statistic: 4.1216, p-value: 0.0033
+\end{itemize}
+
+The p-value < 0.05 indicates a statistically significant difference, with Abs outperforming ReLU on this dataset.
+
+\subsubsection{CIFAR-10}
+
+[TBD: Add results for CIFAR-10 using ResNet-18 architecture. Include average accuracy, loss, and statistical significance.]
+
+\subsubsection{CIFAR-100}
+
+[TBD: Add results for CIFAR-100 using ResNet-18 architecture. Include average accuracy, loss, and statistical significance.]
+
+\subsection{Tabular Data Tasks}
+
+\subsubsection{UCI Adult Dataset}
+
+[TBD: Add results for UCI Adult dataset using MLP architecture. Include average accuracy, loss, and statistical significance.]
+
+\subsubsection{Wine Quality Dataset}
+
+[TBD: Add results for Wine Quality dataset using MLP architecture. Include average accuracy, loss, and statistical significance.]
+
+\subsubsection{Iris Dataset}
+
+[TBD: Add results for Iris dataset using MLP architecture. Include average accuracy, loss, and statistical significance.]
+
+\subsection{Error Overlap Analysis}
+
+[TBD: Present results of error overlap analysis between ReLU and Abs models for each dataset. Discuss implications for potential ensemble methods.]
+
+\subsection{Training Dynamics}
+
+[TBD: Analyze and compare training curves for ReLU and Abs models across datasets. Discuss convergence rates and stability.]
+
+\subsection{Interpretability Analysis}
+
+[TBD: Present results of interpretability analysis. This may include visualization of learned features, analysis of decision boundaries, or other techniques that demonstrate how Abs activation allows for better interpretation of Gaussian clusters in the data.]
+
+\subsection{Summary of Findings}
+
+Based on the preliminary results from the MNIST dataset, we observe that the Abs activation function shows promise as an alternative to ReLU. The statistically significant improvement in accuracy suggests that Abs may offer benefits in terms of model performance, at least for certain types of tasks.
+
+[TBD: Summarize overall trends across all datasets once results are available. Discuss whether the performance benefits of Abs generalize across different types of data and model architectures.]
+
+\section{Discussion}
+
+% Interpret results, discuss implications, and compare with existing literature
+
+\section{Conclusion}
+
+% Summarize findings and suggest future research directions
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
