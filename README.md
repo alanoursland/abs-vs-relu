@@ -82,18 +82,6 @@ For each dataset and model architecture, the following experiments are conducted
 
 Results are stored in the `results/` directory, with separate subdirectories for each dataset. Each subdirectory contains aggregated results for each combination of dataset, model, and activation function, along with summary files comparing ReLU and Abs.
 
-### MNIST LeNet Experiment Results
-We conducted experiments on the MNIST dataset using the LeNet architecture to compare the performance of the ReLU and Abs activation functions. Below are the test set final results from 5 runs for each activation function:
-
-**ReLU**: Average Accuracy: **98.57%** Average Loss: **0.0007**
-**Abs**: Average Accuracy: **98.76%** Average Loss: **0.0006**
-**T-Test**: t-statistic: **4.1216** p-value: **0.0033**
-
-Since the p-value is less than 0.05, the difference in accuracies is statistically significant, indicating that the Abs activation function performs better than the ReLU activation function for the MNIST dataset using the LeNet architecture. These results suggest that Abs is a viable alternative to ReLU.
-
-
-
-
 ## How to Run
 
 1. **Setup:**
@@ -120,6 +108,10 @@ Since the p-value is less than 0.05, the difference in accuracies is statistical
 Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or improvements.
 
 ## License
+
+This repository includes modified code from the PyTorch project, which is licensed under the BSD license. The original code is copyrighted by Facebook, Inc. and other contributors. See the derivative files for the full text of the PyTorch license.
+
+Modifications to the PyTorch LSTM implementation were made by Alan Oursland.
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
 
