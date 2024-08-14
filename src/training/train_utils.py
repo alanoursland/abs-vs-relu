@@ -44,6 +44,19 @@ def test_fast(model, X_test, Y_test, criterion, epoch):
     )
     return test_loss, accuracy
 
+def test_regression(model, X_test, Y_test, criterion, epoch):
+    model.eval()
+    test_loss = 0
+    sample_count = Y_test.size(0)
+    with torch.no_grad():
+        output = model(X_test)
+        test_loss = criterion(output, Y_test.unsqueeze(1).float()).item() * sample_count
+
+    test_loss /= sample_count
+    print(f"{epoch}: Test set: Average loss: {test_loss:.4f}")
+    return test_loss
+
+
 def test(model, test_loader, criterion, epoch, device='cuda'):
     model.eval()
     test_loss = 0

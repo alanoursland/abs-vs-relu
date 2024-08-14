@@ -11,5 +11,5 @@ class WineQualityMLP(nn.Module):
     def forward(self, x):
         x = self.activation(self.layer1(x))
         x = self.activation(self.layer2(x))
-        x = self.layer3(x)
+        x = self.layer3(x).squeeze(1)
         return x

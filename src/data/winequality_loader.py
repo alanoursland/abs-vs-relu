@@ -70,8 +70,8 @@ def load_winequality(batch_size=64, data_dir="./datasets/WineQuality", test_size
     # Convert to PyTorch tensors
     X_train = torch.tensor(X_train, dtype=torch.float32)
     X_test = torch.tensor(X_test, dtype=torch.float32)
-    y_train = torch.tensor(y_train, dtype=torch.int64)
-    y_test = torch.tensor(y_test, dtype=torch.int64)
+    y_train = torch.tensor(y_train, dtype=torch.float32)
+    y_test = torch.tensor(y_test, dtype=torch.float32)
 
     # Create custom dataset objects
     train_dataset = WineQualityDataset(X_train, y_train)

@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class AdultIncomeMLP(nn.Module):
-    def __init__(self, activation_function=nn.ReLU):
+    def __init__(self, activation_function=nn.ReLU()):
         super(AdultIncomeMLP, self).__init__()
         self.layer1 = nn.Linear(14, 64)
         self.layer2 = nn.Linear(64, 32)
@@ -13,3 +13,4 @@ class AdultIncomeMLP(nn.Module):
         x = self.activation(self.layer2(x))
         x = self.layer3(x)
         return x
+

@@ -97,7 +97,7 @@ def load_adult(batch_size=64, data_dir="./datasets/Adult", test_size=0.2, random
 
     # Create DataLoader objects for the training and test sets
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=len(test_dataset), shuffle=False)
 
     return train_loader, test_loader
 

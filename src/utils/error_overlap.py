@@ -10,9 +10,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from models.lenet import LeNet
 from models.resnet18 import ResNet18
+from models.adult_mlp import AdultIncomeMLP
+from models.winequality_mlp import WineQualityMLP
 from data.mnist_loader import load_mnist
 from data.cifar10_loader import load_cifar10
 from data.cifar100_loader import load_cifar100
+from data.adult_loader import load_adult
+from data.winequality_loader import load_winequality
 from config import Config
 
 
@@ -27,6 +31,10 @@ def load_model(config, run):
         model = ResNet18(10, activation_function=activation_function)
     elif config.model == "resnet18" and config.dataset == "cifar100":
         model = ResNet18(100, activation_function=activation_function)
+    elif config.model == "AdultIncomeMLP" and config.dataset == "adult":
+        model = AdultIncomeMLP(activation_function=activation_function)
+    elif config.model == "WineQualityMLP" and config.dataset == "winequality":
+        model = WineQualityMLP(activation_function=activation_function)
     else:
         raise f"Unknown model type {config_a.model}"
 
@@ -64,6 +72,10 @@ def error_overlap_analysis(config_a, config_b, device):
         _, test_loader = load_cifar10(batch_size=config_a.test_batch_size)
     elif config_a.dataset == "cifar100":
         _, test_loader = load_cifar100(batch_size=config_a.test_batch_size)
+    elif config_a.dataset == "adult":
+        _, test_loader = load_adult(batch_size=config_a.test_batch_size)
+    elif config_a.dataset == "winequality":
+        _, test_loader = load_winequality(batch_size=config_a.test_batch_size)
     else:
         raise f"Unknown dataset {config_a.dataset}"
 

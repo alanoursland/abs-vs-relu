@@ -11,6 +11,8 @@ from src.training.train_mnist import main as train_mnist_main
 from src.training.train_cifar10 import main as train_cifar10_main
 from src.training.train_cifar100 import main as train_cifar100_main
 from src.training.train_imdb import main as train_imdb_main
+from src.training.train_adult import main as train_adult_main
+from src.training.train_winequality import main as train_winequality_main
 from src.config import Config
 
 def load_config(json_file):
@@ -53,6 +55,10 @@ def main():
         train_function = train_cifar100_main
     elif config.dataset.lower() == 'imdb':
         train_function = train_imdb_main
+    elif config.dataset.lower() == 'adult':
+        train_function = train_adult_main
+    elif config.dataset.lower() == 'winequality':
+        train_function = train_winequality_main
     else:
         raise ValueError(f"Unsupported dataset: {config.dataset}")
 
